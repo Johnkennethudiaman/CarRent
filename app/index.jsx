@@ -4,41 +4,42 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
   ImageBackground,
 } from "react-native";
 import { useRouter } from "expo-router";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
-export default function Landing() {
+export default function LandingPage() {
   const router = useRouter();
 
   return (
     <ImageBackground
-      source={require("../assets/images/car-bg.jpg")} // replace with your car rental background image
+      source={require("../assets/images/car-bg.jpg")} // put your car image here
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
-        <View style={styles.card}>
-          <Text style={styles.title}>CarRent</Text>
-          <Text style={styles.subtitle}>
-            Find the perfect ride for your next journey.
-          </Text>
+      {/* Dark overlay to improve text visibility */}
+      <View style={styles.overlay} />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.container}
+      >
+        <Animated.View entering={FadeInUp.duration(700)} style={styles.content}>
+          <Text style={styles.title}>Get Started with CarRent</Text>
+          <Text style={styles.subtitle}>Rent your perfect ride in just a few taps.</Text>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("/login")}
+            activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.signupButton]}
-            onPress={() => router.push("/signup")}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </Animated.View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -46,55 +47,53 @@ export default function Landing() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    width: "100%",
-    height: "100%",
   },
   overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // dark overlay for contrast
+  },
+  container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    backgroundColor: "rgba(0,0,0,0.4)", // dark overlay for contrast
+    paddingHorizontal: 30,
   },
-  card: {
-    width: "100%",
-    maxWidth: 400,
-    backgroundColor: "rgba(255,255,255,0.9)",
-    borderRadius: 20,
-    padding: 24,
+  content: {
     alignItems: "center",
   },
   title: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
-    color: "#222",
+    color: "#fff",
+    marginBottom: 10,
     textAlign: "center",
-    marginBottom: 8,
+    textShadowColor: "rgba(0,0,0,0.6)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#444",
+    fontSize: 18,
+    color: "#ddd",
+    marginBottom: 40,
     textAlign: "center",
-    marginBottom: 24,
+    lineHeight: 24,
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
   button: {
-    width: "100%",
-    backgroundColor: "#2a9d8f",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 12,
-    shadowColor: "#2a9d8f",
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  signupButton: {
     backgroundColor: "#e76f51",
+    paddingVertical: 16,
+    paddingHorizontal: 55,
+    borderRadius: 30,
+    elevation: 8,
+    shadowColor: "#e76f51",
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: "600",
     color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
   },
 });

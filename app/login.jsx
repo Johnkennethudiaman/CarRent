@@ -10,11 +10,15 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
-import Animated, { FadeInUp } from "react-native-reanimated";
+import Animated, {
+  FadeInUp,
+  FadeOutDown,
+} from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../src/firebaseConfig";
 import { BlurView } from "expo-blur";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,13 +26,9 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password ❌");
-      return;
-    }
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      Alert.alert("Success", "Logged in successfully 🎉");
       router.replace("/dashboard");
     } catch (error) {
       Alert.alert("Login Error", error.message);
@@ -37,97 +37,157 @@ export default function Login() {
 
   return (
     <ImageBackground
-      source={require("../assets/images/car-bg.jpg")} // car image background
+      source={require("../assets/images/car-bg.jpg")}
       style={styles.background}
       resizeMode="cover"
     >
-      {/* Blur entire background */}
-      <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+      {/* Dark overlay */}
+      <View style={styles.overlay} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.container}
       >
-        <Animated.View style={styles.card} entering={FadeInUp.duration(700)}>
-          <Text style={styles.title}>Welcome Back to CarRent</Text>
-          <Text style={styles.subtitle}>
-            Book your ride in just a few taps.
-          </Text>
+        {/* Back button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push("/")}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={28} color="#fff" />
+        </TouchableOpacity>
 
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#bbb"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            style={styles.input}
-          />
+        {/* Blur and animated form */}
+        <BlurView intensity={90} tint="dark" style={styles.blurContainer}>
+          <Animated.View
+            entering={FadeInUp.duration(700)}
+            exiting={FadeOutDown.duration(500)}
+            style={styles.card}
+          >
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Login to your account</Text>
 
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#bbb"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.input}
-          />
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#bbb"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+            />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#bbb"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={styles.input}
+            />
 
-          <TouchableOpacity onPress={() => router.push("/signup")}>
-            <Text style={styles.link}>Don’t have an account? Sign up</Text>
-          </TouchableOpacity>
-        </Animated.View>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Log In</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push("/signup")}>
+              <Text style={styles.link}>Don't have an account? Sign Up</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </BlurView>
       </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  container: { flex: 1, justifyContent: "center", padding: 20 },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+  backButton: {
+    position: "absolute",
+    top: Platform.OS === "ios" ? 50 : 30,
+    left: 20,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    padding: 8,
+    borderRadius: 30,
+    zIndex: 10,
+  },
+  blurContainer: {
+    borderRadius: 20,
+    marginHorizontal: 10,
+    overflow: "hidden",
+  },
   card: {
-    backgroundColor: "rgba(38, 70, 83, 0.75)", // deep blue overlay
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: "rgba(38, 70, 83, 0.85)",
+    padding: 28,
+    borderRadius: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 10,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
-    textAlign: "center",
     marginBottom: 8,
+    textAlign: "center",
+    letterSpacing: 1,
   },
   subtitle: {
-    fontSize: 15,
-    color: "#eee",
+    fontSize: 16,
+    color: "#ddd",
+    marginBottom: 24,
     textAlign: "center",
-    marginBottom: 20,
+    lineHeight: 22,
   },
   input: {
+    width: "100%",
     backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 16,
     color: "#fff",
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 14,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e9c46a", // gold accent
+    borderColor: "transparent",
+    fontWeight: "500",
   },
   button: {
-    backgroundColor: "#e76f51", // orange accent
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 12,
+    backgroundColor: "#e76f51",
+    paddingVertical: 16,
+    paddingHorizontal: 55,
+    borderRadius: 30,
+    elevation: 8,
     shadowColor: "#e76f51",
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    marginBottom: 14,
   },
-  buttonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-  link: { fontSize: 14, color: "#f4a261", textAlign: "center" }, // orange-gold link
+  buttonText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  link: {
+    fontSize: 15,
+    color: "#f4a261",
+    textAlign: "center",
+    fontWeight: "600",
+  },
 });

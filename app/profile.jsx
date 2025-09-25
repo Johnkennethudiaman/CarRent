@@ -1,8 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { auth } from "../src/firebaseConfig";
 import { signOut } from "firebase/auth";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Profile() {
   const router = useRouter();
@@ -19,6 +27,12 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="#eee" />
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
+
       <View style={styles.header}>
         <Image
           source={require("../assets/images/profile.jpg")}
@@ -29,13 +43,25 @@ export default function Profile() {
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/editProfile")}
+        >
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+
+        {/* Navigate to Bookings screen */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/bookings")}
+        >
           <Text style={styles.buttonText}>My Bookings</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.logout]} onPress={handleLogout}>
+
+        <TouchableOpacity
+          style={[styles.button, styles.logout]}
+          onPress={handleLogout}
+        >
           <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -44,18 +70,57 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
-  header: { alignItems: "center", marginTop: 60, marginBottom: 40 },
-  avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 16 },
-  name: { fontSize: 20, fontWeight: "600", color: "#222" },
-  email: { fontSize: 14, color: "#666", marginTop: 4 },
-  actions: { gap: 14 },
+  container: {
+    flex: 1,
+    backgroundColor: "#121212",
+    padding: 20,
+    paddingTop: 50,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 6,
+  },
+  backText: {
+    color: "#eee",
+    fontSize: 16,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#eee",
+  },
+  email: {
+    fontSize: 14,
+    color: "#aaa",
+    marginTop: 4,
+  },
+  actions: {
+    gap: 14,
+  },
   button: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#1f1f1f",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
-  buttonText: { fontSize: 16, color: "#222", fontWeight: "500" },
-  logout: { backgroundColor: "#e76f51" },
+  buttonText: {
+    fontSize: 16,
+    color: "#eee",
+    fontWeight: "500",
+  },
+  logout: {
+    backgroundColor: "#e76f51",
+  },
 });

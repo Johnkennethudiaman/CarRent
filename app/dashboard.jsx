@@ -11,12 +11,11 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../src/firebaseConfig";
 
-// Car Brands
 const carBrands = [
   { id: "1", name: "Tesla", icon: require("../assets/images/cars/tesla.png") },
   { id: "2", name: "Mazda", icon: require("../assets/images/cars/mazda.png") },
@@ -24,7 +23,6 @@ const carBrands = [
   { id: "4", name: "Ferrari", icon: require("../assets/images/cars/ferrari.png") },
 ];
 
-// All Cars
 const allCars = [
   {
     id: "1",
@@ -79,7 +77,6 @@ export default function Dashboard() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedBrand, setSelectedBrand] = useState(null);
 
-  // Filter cars by brand
   const filteredCars = selectedBrand
     ? allCars.filter((car) => car.brand === selectedBrand)
     : allCars;
@@ -124,7 +121,7 @@ export default function Dashboard() {
           <Text style={styles.location}>Colomadu, Surakarta</Text>
         </View>
         <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
+          <Ionicons name="notifications-outline" size={24} color="#eee" />
           <TouchableOpacity
             style={styles.profileWrapper}
             onPress={() => router.push("/profile")}
@@ -152,6 +149,7 @@ export default function Dashboard() {
                   selectedBrand === brand.name ? null : brand.name
                 )
               }
+              activeOpacity={0.8}
             >
               <Image source={brand.icon} style={styles.brandIcon} />
               <Text style={styles.brandName}>{brand.name}</Text>
@@ -164,7 +162,9 @@ export default function Dashboard() {
           <Text style={styles.sectionTitle}>
             {selectedBrand ? `${selectedBrand} Cars` : "Best Cars"}
           </Text>
-          <Text style={styles.viewAll}>View All</Text>
+          <TouchableOpacity>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
         </View>
 
         {filteredCars.length > 0 ? (
@@ -177,6 +177,7 @@ export default function Dashboard() {
               <TouchableOpacity
                 style={styles.carCard}
                 onPress={() => openRentModal(item)}
+                activeOpacity={0.85}
               >
                 <Image source={item.image} style={styles.carImage} />
                 <Text style={styles.carName}>{item.name}</Text>
@@ -195,11 +196,11 @@ export default function Dashboard() {
 
       {/* Bottom Nav */}
       <View style={styles.bottomNav}>
-        <Ionicons name="home" size={26} color="#000" />
-        <Ionicons name="calendar-outline" size={26} color="#999" />
-        <Ionicons name="car-outline" size={26} color="#999" />
+        <Ionicons name="home" size={26} color="#14b8a6" />
+        <Ionicons name="calendar-outline" size={26} color="#555" />
+        <Ionicons name="car-outline" size={26} color="#555" />
         <TouchableOpacity onPress={() => router.push("/profile")}>
-          <Ionicons name="person-outline" size={26} color="#999" />
+          <Ionicons name="person-outline" size={26} color="#555" />
         </TouchableOpacity>
       </View>
 
@@ -217,20 +218,19 @@ export default function Dashboard() {
               <>
                 <Text style={styles.modalCar}>{selectedCar.name}</Text>
                 <Text style={styles.modalDetails}>
-                  {selectedCar.location} • {selectedCar.seats} •{" "}
-                  {selectedCar.price}
+                  {selectedCar.location} • {selectedCar.seats} • {selectedCar.price}
                 </Text>
               </>
             )}
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+                style={[styles.modalButton, { backgroundColor: "#444" }]}
                 onPress={() => setModalVisible(false)}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#28a745" }]}
+                style={[styles.modalButton, { backgroundColor: "#14b8a6" }]}
                 onPress={confirmRent}
               >
                 <Text style={styles.modalButtonText}>Rent</Text>
@@ -244,7 +244,10 @@ export default function Dashboard() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: {
+    flex: 1,
+    backgroundColor: "#121212", // Dark background matching signup
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -253,11 +256,29 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 16,
   },
-  locationLabel: { fontSize: 12, color: "#888" },
-  location: { fontSize: 16, fontWeight: "600", color: "#000" },
-  headerIcons: { flexDirection: "row", alignItems: "center", gap: 12 },
-  profileWrapper: { borderRadius: 20, overflow: "hidden" },
-  profile: { width: 32, height: 32, borderRadius: 16 },
+  locationLabel: {
+    fontSize: 12,
+    color: "#888",
+  },
+  location: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#eee",
+  },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  profileWrapper: {
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  profile: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
 
   brandsWrapper: {
     flexDirection: "row",
@@ -265,10 +286,28 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 24,
   },
-  brandItem: { alignItems: "center", padding: 6, borderRadius: 8 },
-  brandSelected: { backgroundColor: "#f0f0f0" },
-  brandIcon: { width: 48, height: 48, marginBottom: 4, resizeMode: "contain" },
-  brandName: { fontSize: 12, color: "#333" },
+  brandItem: {
+    alignItems: "center",
+    padding: 8,
+    borderRadius: 8,
+  },
+  brandSelected: {
+    backgroundColor: "#14b8a6",
+    shadowColor: "#14b8a6",
+    shadowOpacity: 0.7,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  brandIcon: {
+    width: 48,
+    height: 48,
+    marginBottom: 6,
+    resizeMode: "contain",
+  },
+  brandName: {
+    fontSize: 12,
+    color: "#eee",
+  },
 
   sectionHeader: {
     flexDirection: "row",
@@ -276,62 +315,116 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 12,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "600", color: "#000" },
-  viewAll: { fontSize: 12, color: "#007AFF" },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#eee",
+  },
+  viewAll: {
+    fontSize: 14,
+    color: "#14b8a6",
+    fontWeight: "600",
+  },
 
   carCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1f1f1f",
     borderRadius: 16,
     marginHorizontal: 10,
     padding: 12,
     width: 180,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowColor: "#14b8a6",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  carImage: { width: "100%", height: 100, borderRadius: 12, marginBottom: 8 },
-  carName: { fontSize: 14, fontWeight: "600", color: "#000" },
-  carLocation: { fontSize: 12, color: "#777", marginBottom: 6 },
-  carDetails: { flexDirection: "row", justifyContent: "space-between" },
-  carInfo: { fontSize: 12, color: "#444" },
+  carImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 12,
+    marginBottom: 8,
+    resizeMode: "contain",
+  },
+  carName: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#eee",
+  },
+  carLocation: {
+    fontSize: 13,
+    color: "#bbb",
+    marginBottom: 6,
+  },
+  carDetails: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  carInfo: {
+    fontSize: 13,
+    color: "#aaa",
+  },
   noCarsText: {
     textAlign: "center",
-    color: "#888",
+    color: "#666",
     marginTop: 20,
-    fontSize: 14,
+    fontSize: 16,
   },
 
   bottomNav: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
-    backgroundColor: "#fff",
+    borderTopColor: "#222",
+    backgroundColor: "#121212",
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.85)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    width: "80%",
+    backgroundColor: "#1f1f1f",
+    borderRadius: 20,
+    padding: 24,
+    width: "85%",
     alignItems: "center",
+    shadowColor: "#14b8a6",
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    elevation: 10,
   },
-  modalTitle: { fontSize: 18, fontWeight: "700", marginBottom: 10 },
-  modalCar: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
-  modalDetails: { fontSize: 14, color: "#555", marginBottom: 16 },
-  modalActions: { flexDirection: "row", gap: 12 },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    marginBottom: 12,
+    color: "#eee",
+  },
+  modalCar: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 6,
+    color: "#14b8a6",
+  },
+  modalDetails: {
+    fontSize: 14,
+    color: "#ccc",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: 16,
+  },
   modalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 12,
   },
-  modalButtonText: { color: "#fff", fontWeight: "600" },
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 16,
+  },
 });
